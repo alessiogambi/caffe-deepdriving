@@ -1,47 +1,31 @@
-### Running an official image
+The cpu folder contains a basic docker file which builds *this* code (i.e., it checksout the latest commit of this git repo) into a docker container.
 
-You can run one of the automatic [builds](https://hub.docker.com/r/bvlc/caffe). E.g. for the CPU version:
+This repo contains a patched version of the code provided by Andre Netband. The patch enables communication with the AI using named pipes.
 
-`docker run -ti bvlc/caffe:cpu caffe --version`
+The input pipe is used by the AI to receive the frame and the current speed value, using a basic protocol:
+= Speed value, size of the image in bytes, bytes of the image as RGB-3 channel
 
-or for GPU support (You need a CUDA 8.0 capable driver and
-[nvidia-docker](https://github.com/NVIDIA/nvidia-docker)):
+The output pips is used by the AI to output driving commands, using a basic protocol:
+= value for Acc (0-1), value for brake (0-1), value for steering angle (-1,+1)
 
-`nvidia-docker run -ti bvlc/caffe:gpu caffe --version`
+To build the container run:
 
-You might see an error about libdc1394, ignore it.
+```docker build -t deepdriving-caffe-cpu-single:1.0 .```
 
-### Docker run options
+This will take a while since there are plenty of dependencies to download. Many of them might not be needed in practice, by I cannot tell which one :D
 
-By default caffe runs as root, thus any output files, e.g. snapshots, will be owned
-by root. It also runs by default in a container-private folder.
-
-You can change this using flags, like user (-u), current directory, and volumes (-w and -v).
-E.g. this behaves like the usual caffe executable:
-
-`docker run --rm -u $(id -u):$(id -g) -v $(pwd):$(pwd) -w $(pwd) bvlc/caffe:cpu caffe train --solver=example_solver.prototxt`
-
-Containers can also be used interactively, specifying e.g. `bash` or `ipython`
-instead of `caffe`.
+Once the container is ready, the following commands enable to run it:
 
 ```
-docker run -ti bvlc/caffe:cpu ipython
-import caffe
-...
+mkdir pipes
+mkfifo pipes/in
+mkfifo pipes/out
+
+docker run -v $(pwd)/pipes:/pipes -t deepdriving-caffe-cpu-single:1.0
 ```
 
-The caffe build requirements are included in the container, so this can be used to
-build and run custom versions of caffe. Also, `caffe/python` is in PATH, so python
-utilities can be used directly, e.g. `draw_net.py`, `classify.py`, or `detect.py`.
+At this point, assuming you are on a Linux platform, whatever you send to pipes/in will be read by the AI,
+and whatever the Ai writes can be read from pipes/out.
 
-### Building images yourself
-
-Examples:
-
-`docker build -t caffe:cpu cpu`
-
-`docker build -t caffe:gpu gpu`
-
-You can also build Caffe and run the tests in the image:
-
-`docker run -ti caffe:cpu bash -c "cd /opt/caffe/build; make runtest"`
+A simple pyhon code that illustrates how to communicate with the running container can be found under then 
+python folder in this repo.

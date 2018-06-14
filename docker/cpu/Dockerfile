@@ -1,6 +1,7 @@
-FROM ubuntu:16.04
+FROM ubuntu:16.04 AS Builder
 LABEL maintainer caffe-maint@googlegroups.com
 
+# Install original caffe dependencies, dependencies from Andre' Netzeband implementation, and VNC server
 RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
         cmake \
@@ -21,25 +22,49 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         python-numpy \
         python-pip \
         python-setuptools \
-        python-scipy && \
-    rm -rf /var/lib/apt/lists/*
+        python-scipy \
+        libplib-dev \
+        libopenal-dev \
+        libalut-dev \
+        libvorbis-dev \
+        libxxf86vm-dev \
+        libxmu-dev \
+        libxrender-dev \
+        libxrandr-dev \
+        libz-dev \
+        libpng-dev \
+   	x11vnc \
+        xvfb
 
-ENV CAFFE_ROOT=/opt/caffe
-WORKDIR $CAFFE_ROOT
+ENV CAFFE_ROOT=/caffe-deepdriving
 
-# FIXME: use ARG instead of ENV once DockerHub supports this
-ENV CLONE_TAG=rc4
+# Clone the latest commit from the repo
+git clone --depth=1 git@github.com:alessiogambi/caffe-deepdriving.git ${CAFFE_ROOT}
 
-RUN git clone -b ${CLONE_TAG} --depth 1 https://github.com/BVLC/caffe.git . && \
-    pip install --upgrade pip && \
-    cd python && for req in $(cat requirements.txt) pydot; do pip install $req; done && cd .. && \
-    mkdir build && cd build && \
-    cmake -DCPU_ONLY=1 .. && \
-    make -j"$(nproc)"
+WORKDIR ${CAFFE_ROOT}
 
-ENV PYCAFFE_ROOT $CAFFE_ROOT/python
-ENV PYTHONPATH $PYCAFFE_ROOT:$PYTHONPATH
-ENV PATH $CAFFE_ROOT/build/tools:$PYCAFFE_ROOT:$PATH
-RUN echo "$CAFFE_ROOT/build/lib" >> /etc/ld.so.conf.d/caffe.conf && ldconfig
+RUN mkdir -p ${CAFFE_ROOT}/build/linux-64-cpu/release && \
+        mkdir -p ${CAFFE_ROOT}/install/linux-64-cpu/release
 
-WORKDIR /workspace
+WORKDIR ${CAFFE_ROOT}/build/linux-64-cpu/release
+
+RUN ls
+
+RUN cmake -DCPU_ONLY=1 \
+                -DCMAKE_INSTALL_PREFIX=../../../install/linux-64-cpu/release \
+                -DCMAKE_BUILD_TYPE=Release \
+                        ../../.. && \
+    make && \
+    make install
+
+ENV DEEPDRIVING_CAFFE_PATH=${CAFFE_ROOT}/install/linux-64-cpu/release
+
+# Note this is hardcoded
+EXPOSE 5901
+
+WORKDIR ${CAFFE_ROOT}/torcs
+
+# Start the servers: virtual display, vncserver, and torcs_run.sh 1 command
+COPY startup.sh .
+
+CMD ["./startup.sh"]
