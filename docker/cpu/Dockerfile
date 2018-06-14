@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
         cmake \
         git \
-        wget \
+        curl \
         libatlas-base-dev \
         libboost-all-dev \
         libgflags-dev \
@@ -36,10 +36,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
    	x11vnc \
         xvfb
 
+RUN curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | bash
+
+RUN apt-get install git-lfs && git lfs install
+
 ENV CAFFE_ROOT=/caffe-deepdriving
 
 # Clone the latest commit from the repo
-git clone --depth=1 git@github.com:alessiogambi/caffe-deepdriving.git ${CAFFE_ROOT}
+
+RUN git clone --depth 1 https://github.com/alessiogambi/caffe-deepdriving.git ${CAFFE_ROOT}
 
 WORKDIR ${CAFFE_ROOT}
 
