@@ -10,7 +10,7 @@ else
 
   LANES=$1
   MODEL=$2
-  WEIGTHS=$3
+  WEIGHTS=$3
   MEAN=$4
   GPU=$5
 
@@ -34,24 +34,26 @@ else
     fi
   fi
 
-  if [ -z "$WEIGTHS" ]; then
-    if [ -z "$DEEPDRIVING_WEIGHTS_PATH" ]; then
-      if [ -e pre_trained/driving_train_1F_iter_140000.caffemodel ]; then
-        WEIGHTS=`pwd`"/pre_trained/driving_train_1F_iter_140000.caffemodel"
+#  if [ -z "$WEIGHTS" ]; then
+#    if [ -z "$DEEPDRIVING_WEIGHTS_PATH" ]; then
+#      if [ -e pre_trained/driving_train_1F_iter_140000.caffemodel ]; then
 
-      else
-        echo "Error: Please specify path to DeepDriving weights with: "
-        echo "export DEEPDRIVING_WEIGHTS_PATH=<path-to-weights>"
-        echo " "
-        exit -1
+WEIGHTS=`pwd`"/pre_trained/driving_train_1F_iter_140000.caffemodel"
 
-      fi
-
-    else
-      WEIGTHS=$DEEPDRIVING_WEIGHTS_PATH
-
-    fi
-  fi
+#
+#      else
+#        echo "Error: Please specify path to DeepDriving weights with: "
+#        echo "export DEEPDRIVING_WEIGHTS_PATH=<path-to-weights>"
+#        echo " "
+#        exit -1
+#
+#      fi
+#
+#    else
+#      WEIGHTS=$DEEPDRIVING_WEIGHTS_PATH
+#
+#    fi
+#  fi
 
   if [ -z "$MEAN" ]; then
     if [ -z "$DEEPDRIVING_MEAN_PATH" ]; then
@@ -95,11 +97,19 @@ else
   fi
 
   echo "Use Model:   " $MODEL
-  echo "Use Weights: " $WEIGTHS
+  echo "Use Weights: " $WEIGHTS
 
   BIN_PATH=$DEEPDRIVING_CAFFE_PATH/bin
 #  cd $BIN_PATH && (GLOG_logtostderr=1 ./torcs_run --model $MODEL --weights $WEIGHTS --mean $MEAN --lanes $LANES --gpu $GPU)
-  GLOG_logtostderr=1 $BIN_PATH/torcs_run --model $MODEL --weights $WEIGTHS --mean $MEAN --lanes $LANES --gpu $GPU
-fi
 
+set -x
+: "${MODEL?Missing}"
+: "${WEIGHTS?Missing}"
+: "${MEAN?Missing}"
+: "${LANES?Missing}"
+: "${IN_PIPE?Missing}"
+: "${OUT_PIPE?Missing}"
+
+  GLOG_logtostderr=1 $BIN_PATH/torcs_run --model $MODEL --weights $WEIGHTS --mean $MEAN --lanes $LANES --gpu $GPU --input $IN_PIPE --output $OUT_PIPE
+fi
 

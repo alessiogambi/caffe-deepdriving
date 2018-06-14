@@ -3,6 +3,8 @@
  *
  *  Created on: Mar 25, 2017
  *      Author: Andre Netzeband
+ *  Updated on: Jun 14, 2018
+ *      Author: Alessio Gambi
  *
  *  Attention: This is a reimplementation of the code the DeepDriving project.
  *  See http://deepdriving.cs.princeton.edu for more details.
@@ -15,7 +17,7 @@
 #define DRIVECONTROLLER_HPP_
 
 #include "Indicators.hpp"
-#include "SharedMemory.hpp"
+#include "Pipes.hpp"
 
 class CDriveController
 {

@@ -11,6 +11,7 @@
 #include "caffe/caffe.hpp"
 
 #include <opencv2/core/core.hpp>
+#include <iostream>
 
 class CImage
 {
@@ -27,9 +28,16 @@ class CImage
     /// @brief Writes the image to a datum.
     void writeToDatum(caffe::Datum &rData) const;
 
+    // We push around the small pictures that are store in the db
+    // Not sure which package/header provides those !
+    void writeToMemory(uint8_t * pMemory, int SourceWidth, int SourceHeight);
+
     /// @brief Read the image from memory location.
     void readFromMemory(uint8_t * pMemory, int SourceWidth, int SourceHeight);
     void readFromMemory(uint8_t * pMemory, int SourceWidth, int SourceHeight, int TargetWidth, int TargetHeight);
+
+    // Reads bytes from array
+    void readFromNamedPipe(std::string);
 
     /// @brief Sets a random black/white image with the text "No Video".
     void setNoVideo(int TargetWidth, int TargetHeight);

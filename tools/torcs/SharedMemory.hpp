@@ -22,7 +22,7 @@ typedef struct
   bool   IsAIControlled;
   bool   ShowGroundTruth;
   bool   IsRecording;
-} TorcsData_t;
+} TorcsData_t2;
 
 class CSharedMemory
 {
@@ -35,6 +35,8 @@ class CSharedMemory
 
     /// @brief Reads the shared memory if possible.
     void read();
+    //
+    void readDrivingAction();
 
     /// @return Returns true, if new data was read.
     bool isDataUpdated();
@@ -42,11 +44,14 @@ class CSharedMemory
     /// @brief Writes the shared memory.
     void write();
 
+    /// @brief Force a writes the shared memory. This simulates TORCS
+    void forceWrite();
+
     /// @brief The indicators from the shared memory.
     Indicators_t Indicators;
 
     /// @brief The other data which comes from torcs.
-    TorcsData_t TorcsData;
+    TorcsData_t2 TorcsData;
 
     /// @brief The image comming from torcs.
     CImage Image;

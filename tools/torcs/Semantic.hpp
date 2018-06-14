@@ -3,13 +3,15 @@
  *
  *  Created on: Mar 25, 2017
  *      Author: Andre Netzeband
+ *  Updated on: Jun 14, 2018
+ *      Author: Alessio Gambi 
  */
 
 #ifndef SEMANTIC_H_
 #define SEMANTIC_H_
 
 #include "Indicators.hpp"
-#include "SharedMemory.hpp"
+#include "Pipes.hpp"
 #include "Image.hpp"
 #include "ErrorMeasurement.hpp"
 

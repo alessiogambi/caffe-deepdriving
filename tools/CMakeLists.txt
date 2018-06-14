@@ -50,40 +50,14 @@ set(torcs_library_source
   torcs/Indicators.cpp
   torcs/Semantic.cpp
   torcs/Image.cpp
-  torcs/SharedMemory.cpp
+  torcs/Pipes.cpp
   torcs/DriveController.cpp
   torcs/NeuralNet.cpp
   torcs/ErrorMeasurement.cpp
 )
-
-set(torcs_visualize_database_source
-  torcs_visualize_database.cpp
-  ${torcs_library_source}
-)
-compile_tool(torcs_visualize_database "${torcs_visualize_database_source}")
 
 set(torcs_run_source
   torcs_run.cpp
   ${torcs_library_source}
 )
 compile_tool(torcs_run "${torcs_run_source}")
-
-set(torcs_verify_source
-  torcs_verify.cpp
-  ${torcs_library_source}
-)
-compile_tool(torcs_verify "${torcs_verify_source}")
-
-set(torcs_verify_fast_source
-  torcs_verify_fast.cpp
-  ${torcs_library_source}
-)
-compile_tool(torcs_verify_fast "${torcs_verify_fast_source}")
-
-set(torcs_record_source
-  torcs_record.cpp
-  ${torcs_library_source}
-)
-compile_tool(torcs_record "${torcs_record_source}")
-
-

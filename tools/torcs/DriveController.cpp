@@ -52,7 +52,7 @@ void CDriveController::control(Indicators_t &rIndicators, TorcsData_t &rCommands
     Lanes = rIndicators.getNumberOfLanes();
   }
 
-  //std::cout << "Controlling: " << rCommands.IsControlling << ", Lanes: " << Lanes << std::endl;
+  std::cout << "Controlling: " << rCommands.IsControlling << ", Lanes: " << Lanes << std::endl;
 
   if (rCommands.IsControlling)
   {
