@@ -24,6 +24,13 @@ mkfifo pipes/out
 docker run -v $(pwd)/pipes:/pipes -t deepdriving-caffe-cpu-single:1.0
 ```
 
+If you wish to "see" what happens inside the docker container you must forward the 5901 port of the container and connect to it using VNC
+
+For example the following code enable to access the container on the port 5903.
+```
+docker run -v -p 5903:5901 $(pwd)/pipes:/pipes -t deepdriving-caffe-cpu-single:1.0
+```
+
 At this point, assuming you are on a Linux platform, whatever you send to pipes/in will be read by the AI,
 and whatever the Ai writes can be read from pipes/out.
 
